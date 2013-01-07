@@ -1,2 +1,2 @@
-{% for update in updates %}{{ update.host.name }}	{{ update.installedVersion }}	{{ update.candidateVersion }}
+{% for update in updates %}{{ update.host.name }}	{{ update.installedVersion }}	{{ update.candidateVersion }}	{{ update.is_security|yesno:"security,regular" }}
 {% endfor %}
