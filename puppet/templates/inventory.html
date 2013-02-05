@@ -63,6 +63,7 @@ Click on a cell to filter by its value; click on a column header to sort; shift+
       <th>BIOS Date</th>
       <th>BIOS Version</th>
       <th>Serial nr.</th>
+      <th>Resources</th>
     </tr>
   </thead>
   <tbody>
@@ -78,6 +79,10 @@ Click on a cell to filter by its value; click on a column header to sort; shift+
       <td class="filter"><span class="mono">{{ host.bios_date }}</span></td>
       <td class="filter"><span class="mono">{{ host.bios_version }}</span></td>
       <td><span class="mono">{{ host.serialnumber }}</span></td>
+      <td>{% for res, link in host.resources %}
+	<a href="{{ link }}">{{ res }}</a>
+	{% endfor %}
+      </td>
     </tr>
     {% endif %}
     {% endfor %}

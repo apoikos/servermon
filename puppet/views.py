@@ -16,10 +16,15 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
+import re
 from servermon.puppet.models import Host, Fact, FactValue
 from servermon.compat import render
 from django import forms
+from django.template.defaultfilters import slugify
 from django.contrib.admin.widgets import FilteredSelectMultiple
+
+DELL_DRIVERS_ROOT = 'http://ftp.dell.com/Pages/Drivers/'
+DELL_SUPPORT_ROOT = 'https://www.dell.com/support/troubleshooting/us/en/555/servicetag/'
 
 def inventory(request):
     keys = [
@@ -55,6 +60,18 @@ def inventory(request):
         host = {'name': key }
         for v in values:
             host[v.name] = v.value
+        host['resources'] = []
+        if host.get('manufacturer', '').startswith('Dell '):
+            name = host.get('productname')
+            if name:
+                # Dell PowerEdge R210 II hack
+                name = re.sub(r'\bii\b', '2', slugify(name))
+                host['resources'].append(('Drivers',
+                                    DELL_DRIVERS_ROOT + name + ".html"))
+            serial = host.get('serialnumber')
+            if serial:
+                host['resources'].append(('Support',
+                                          DELL_SUPPORT_ROOT + serial))
         hosts.append(host)
 
     return render(request, "inventory.html", {'hosts': hosts})
